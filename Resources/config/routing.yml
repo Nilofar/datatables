@@ -1,0 +1,4 @@
+edulog_check_form:
+  resource: "@EdulogDatatablesBundle/Controller/"
+  type:     annotation
+  prefix: "/datatables"
