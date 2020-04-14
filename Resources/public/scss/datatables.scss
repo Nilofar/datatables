@@ -1,0 +1,21 @@
+@import "~datatables.net-bs4/css/dataTables.bootstrap4.min.css";
+@import "~datatables.net-fixedheader-bs4/css/fixedHeader.bootstrap4.min.css";
+@import "~datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css";
+@import "~datatables.net-keytable-bs4/css/keyTable.bootstrap4.min.css";
+
+div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+  justify-content: center;
+}
+
+#dt_wrapper {
+  margin-bottom: 20px;
+}
+
+table.dataTable div.row-details {
+  padding-top: 10px;
+  padding-bottom:10px;
+
+  &:hover {
+    background-color: #f3f7f94d;
+  }
+}
