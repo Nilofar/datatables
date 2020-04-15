@@ -1,7 +1,10 @@
 <?php
 namespace Edulog\DatatablesBundle\Twig;
 
+use Edulog\DatatablesBundle\Service\DtFilter;
 use Omines\DataTablesBundle\DataTable;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\Routing\RouterInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -52,12 +55,15 @@ class DatatableConfTwigExtension extends AbstractExtension
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    public function renderDataTables(\Twig_Environment $environment, DataTable $dataTable, string $id, array $options = [])
+    public function renderDataTables(\Twig_Environment $environment, DataTable $dataTable, string $id, FormView $form = null , array $options = [])
     {
+        $dtFilter = $form->vars['value'];
+
         return $environment->render('@EdulogDatatables/render_datatables.html.twig', [
             'datatable' => $dataTable,
             'id'        => $id,
-            'options'   => $options
+            'options'   => $options,
+            'identifier' => $dtFilter instanceof DtFilter ? $dtFilter->getIdentifier() : null
         ]);
     }
 }

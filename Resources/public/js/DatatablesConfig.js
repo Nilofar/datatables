@@ -8,7 +8,7 @@ import DataTableKeyTable from 'datatables.net-keytable-bs4';
 
 require('./custom_omines_datatables.js');
 
-export default class DataTablesConfig {
+export default class DatatablesConfig {
 
     constructor(options) {
         this.table = '';
@@ -17,6 +17,7 @@ export default class DataTablesConfig {
         this.settings       = this._divDatatable.data('settings');
         this._formFilter    = $('form[name="search_engine"]');
         this.id             = this._divDatatable.attr('id');
+        this.identifier     = this._divDatatable.data('identifier');
         this.options = {
             dom : '<"row"<"col-3"l><"col-6 text-center"i><"col-3"f>>rt<"row"<"col-12 text-center"i>><"row"<"col-12"p>><"clear">',
             //responsive : true,
@@ -118,14 +119,14 @@ export default class DataTablesConfig {
             $this._formFilter.on('submit', function(e) {
                 e.preventDefault();
 
-                let identifier = $(this).data('formClass');
-
                 $.ajax({
                     type: 'POST',
                     dataType: 'json',
                     context : this,
                     data: $this._formFilter.serialize(),
-                    url: Routing.generate('edulog_datatables_saveFilters', {identifier : identifier})
+                    url: Routing.generate('edulog_datatables_saveFilters', {
+                        identifier : $this.identifier
+                    })
                 })
                     .fail(function(e){
                         toastr['error']("Une erreur est survenue, impossible de charger les données");

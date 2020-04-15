@@ -13,7 +13,6 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class DatatablesController
  * @package Edulog\DatatablesBundle\Controller
- * @Route("datatables")
  */
 class DatatablesController extends Controller
 {

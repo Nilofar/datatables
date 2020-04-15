@@ -7,7 +7,13 @@ namespace Edulog\DatatablesBundle\Service;
  */
 class DtFilter
 {
+    /** @var bool $doSearch */
     protected $doSearch = false;
+
+    /** @var string $identifier */
+    protected $identifier;
+
+    /** @var array $params */
     protected $params = [];
 
     public function __isset($name)
@@ -33,5 +39,23 @@ class DtFilter
     public function isSearchDone()
     {
         return $this->doSearch;
+    }
+
+    /**
+     * @param string|null $identifier
+     * @return DtFilter
+     */
+    public function setFormClass(string $identifier = null)
+    {
+        $this->identifier = $identifier;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdentifier()
+    {
+        return $this->identifier;
     }
 }

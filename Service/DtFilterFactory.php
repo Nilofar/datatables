@@ -53,7 +53,8 @@ class DtFilterFactory
     {
 
         $dtFilter = $this->_session->getBag($this->bagName)->get($class);
-
+        $dtFilter->setFormClass($class);
+        
         if ($dtFilter instanceof DtFilter) {
             return $dtFilter;
         }

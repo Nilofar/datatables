@@ -2,27 +2,8 @@ services:
   Edulog\DatatablesBundle\Controller\DatatablesController:
     arguments: ['@doctrine.orm.entity_manager', '@Edulog\DatatablesBundle\Service\DtFilterFactory']
 
-  Edulog\DatatablesBundle\Service\DtFilter:
-    autowire: true
-    autoconfigure: true
-    public: true
-
   Edulog\DatatablesBundle\Service\DtFilterFactory:
-    autowire: true
-    autoconfigure: true
-    public: true
     arguments: ['@session']
-
-#  Edulog\DatatablesBundle\Service\DtSearchType:
-#    arguments: ['@doctrine.orm.entity_manager']
-
-  Edulog\DatatablesBundle\Service\CustomORMAdapter:
-    autowire: true
-    autoconfigure: true
-    public: true
-
-
-
 
   # Extensions TWIG
   Edulog\DatatablesBundle\Twig\DatatableConfTwigExtension:
