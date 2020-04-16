@@ -355,7 +355,7 @@ class DtStudentSearchType extends DtSearchType
             ->addOrderBy('lastName', DataTable::SORT_ASCENDING)
             
             // Le customORMAdapter permet notamment d'ajotuer les orderBy en fonction des colonnes
-            // qui ont été cliquées.
+            // qui ont été sélectionnées
             ->createAdapter(CustomORMAdapter::class, [
                 'entity' => Person::class,
                 
@@ -376,6 +376,104 @@ class DtStudentSearchType extends DtSearchType
 
 ```
 
+Exemple de méthode dans le repository
+
+```php
+/**
+     * Initialisation du queryBuilder pour la recherche d'élèves.
+     *
+     * Il faut passer le queryBuilder du createAdapter pour que la requete fonctionne sur la liste des élèves.
+     * En passsant un DtFilter il est possible d'appliquer les filtres ce celui-ci.
+     *
+     * @param DtFilter|null $dtFilter
+     * @param QueryBuilder|null $qb
+     * @return QueryBuilder
+     */
+    public function getQBFindAllStudents(DtFilter $dtFilter = null, QueryBuilder $qb = null)
+    {
+        if (!$qb instanceof QueryBuilder) {
+            $qb = $this->createQueryBuilder('p');
+        }
+
+        $qb
+            ->select('p')
+            ->addSelect('s')
+            ->addSelect('sc')
+            ->addSelect('c')
+            ->addSelect('division')
+            ->addSelect('unit')
+            ->addSelect('division.title as classroomTitle , unit.color as unitColor, regime.title as regimeTitle')
+            ->join('p.student', 's')
+            ->join('s.studentClassrooms', 'sc', 'WITH', 'CURRENT_TIMESTAMP() >= sc.startDate AND CURRENT_TIMESTAMP() <= sc.endDate')
+            ->leftJoin('sc.classroom', 'c')
+            ->join('s.regime', 'regime')
+            ->leftjoin('c.division', 'division')
+            ->leftjoin('division.unit', 'unit')
+            ->leftjoin('s.responsibleStudents', 'studentResponsible')
+            ->leftjoin('studentResponsible.responsible', 'responsibleStudent')
+            ->leftjoin('s.responsibleStudents', 'responsibleStudentPrincipal', 'WITH', 'responsibleStudentPrincipal.principal = 1')
+            ->leftjoin('responsibleStudentPrincipal.responsible', 'responsiblePrincipal')
+            ->where('p.student IS NOT NULL')
+            ->groupBy('p.id');
+
+        if ($dtFilter instanceof DtFilter) {
+            if ($dtFilter->classroom != null) {
+                $qb
+                    ->andWhere('s.classroom = :classroomId')
+                    ->setParameter('classroomId', $dtFilter->classroom);
+            }
+
+            if ($dtFilter->division != null) {
+                $qb
+                    ->andWhere('c.division = :divisionId')
+                    ->setParameter('divisionId', $dtFilter->division);
+            }
+
+            if ($dtFilter->RemoveNoClassroom == true) {
+                $qb->andWhere('sc IS NULL');
+            }
+            else {
+                $qb->andWhere('c IS NOT NULL');
+            }
+
+            if ($dtFilter->regime != null) {
+                $qb
+                    ->setParameter('regimeId',$dtFilter->regime)
+                    ->andWhere('regime.id = :regimeId');
+            }
+
+            if ($dtFilter->Prenom != null) {
+                $qb
+                    ->andWhere('p.firstName LIKE :firstName')
+                    ->setParameter('firstName', '%' . $dtFilter->Prenom . '%');
+            }
+            if ($dtFilter->Nom != null) {
+                $qb
+                    ->andWhere('p.lastName LIKE :lastName')
+                    ->setParameter('lastName', '%' . $dtFilter->Nom . '%');
+            }
+            if ($dtFilter->unit != null) {
+                $qb
+                    ->join('c.division', 'd')
+                    ->join('d.unit', 'u')
+                    ->andWhere('u.id = :unitId')
+                    ->setParameter('unitId', $dtFilter->unit);
+            }
+            if ($dtFilter->brotherhoodSize != null) {
+                $qb
+                    ->andWhere('responsiblePrincipal.brotherhoodSize = :brotherhoodSize')
+                    ->setParameter('brotherhoodSize', $dtFilter->brotherhoodSize);
+            }
+            if ($dtFilter->brotherhoodRank != null) {
+                $qb
+                    ->andWhere('s.brotherhoodRank = :brotherhoodRank')
+                    ->setParameter('brotherhoodRank', $dtFilter->brotherhoodRank);
+            }
+        }
+
+        return $qb;
+    }
+```
 ### Step 5 :  JS
 
 Exemple dans un fichier search_student.js
