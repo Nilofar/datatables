@@ -109,7 +109,7 @@ Exemple pour la liste des él`eves :
 Injecter le dtFilterFactory dans le constructeur du controller et initialiser
 le dtFilter associé.
 
-FormSearchType peut contenir différent champs (TextType, ChoiceType etc ..) qui serviront à
+StudentResearchType peut contenir différent champs (TextType, ChoiceType etc ..) qui serviront à
 filtrer la requete dans le repository.
 
 Constructeur
@@ -119,7 +119,7 @@ Constructeur
     public function __construct(DtFilterFactory $dtFilterFactory)
     {
         $this->dtFilterFactory = $dtFilterFactory;
-        $this->dtFilter = $dtFilterFactory->getObject(FormSearchType::class);
+        $this->dtFilter = $dtFilterFactory->getObject(StudentResearchType::class);
 
     }
 ```   
@@ -160,7 +160,7 @@ Liste des options : (la totalité de ces options est également disponible via l
 ```php    
     public function indexAction(Request $request, DataTableFactory $dataTableFactory)
     {
-        $form = $this->createForm(FormSearchType::class, $this->dtFilter);
+        $form = $this->createForm(StudentResearchType::class, $this->dtFilter);
         $form->handleRequest($request);
         
         $table = $dataTableFactory->createFromType(DtStudentSearchType::class, [], [
@@ -180,7 +180,7 @@ Liste des options : (la totalité de ces options est également disponible via l
     }
 ```
 
-La classe DtTestSearchType
+La classe DtStudentSearchType
 
 OminesDatatables bundle recommande de créer une classe à part pour éviter d'avoir 
 une méthode de controller HUGE..
