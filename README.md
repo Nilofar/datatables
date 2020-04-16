@@ -102,7 +102,9 @@ datatables:
 
 
 
-### Step 4 : Implémentation dans le controller avec un formulaire de filtrage
+### Step 4 : Implémentation dans le controller avec un formulaire de filtrage .
+ 
+Exemple pour la liste des él`eves :
 
 Injecter le dtFilterFactory dans le constructeur du controller et initialiser
 le dtFilter associé.
@@ -171,7 +173,7 @@ Liste des options : (la totalité de ces options est également disponible via l
             return $table->getResponse();
         }
 
-        return $this->render('view.html.twig', [
+       return $this->render('StudentBaseBundle:Person/Student:search.html.twig', [
             'form' => $form->createView(),
             'datatable' => $table
         ]);
@@ -376,7 +378,8 @@ class DtStudentSearchType extends DtSearchType
 
 ```
 
-Exemple de méthode dans le repository
+Méthode de repository, je fais en sorte de pouvoir passer le QueryBuilder en option pour
+pouvoir reutiliser cette méthode (par exemple pour obtenir le excel associé)
 
 ```php
 /**
@@ -476,9 +479,7 @@ Exemple de méthode dans le repository
 ```
 ### Step 5 :  JS
 
-Exemple dans un fichier search_student.js
-
-Ce fichier JS est charger dans le webpack via un addEntry.
+Exemple dans un fichier search_student.js chargé via webpack dans un addEntry
 
 ```javascript
 import DatatablesConfig from '../../../../bundles/edulogdatatables/js/DatatablesConfig.js';
@@ -506,11 +507,13 @@ dtConfig.addThenCallback(function(dt){
 ````
 
 
-### Step 6 : Extension twig pour afficher le tableau 
+### Step 6 : Extension twig pour afficher le tableau dans la vue search.html.twig avec le formulaire de filtrage
 
 ```twig
 
-// Load des fichiers du webpackConfig.
+{% extends '@Core/layout.html.twig' %}
+{% import 'macros/render.macro.twig' as RENDER %}
+
 
 {% block stylesheets %}
     {{ parent() }}
@@ -522,10 +525,108 @@ dtConfig.addThenCallback(function(dt){
     {{ encore_entry_script_tags('student_search') }}
 {% endblock %}
 
-// on lui passe en paramètre le datatable (issu du controller), l'id du tableau, et le formulaire de filtre(form)
-// si on en a un.
+{% block title %}Rechercher un élève{% endblock %}
 
-{{ render_datatables(datatable, 'studentsList', form) }}
+{% block page_content %}
+    <div class="row">
+        <div class="col-xl-3 col-12">
+            <div class="panel">
+                <div class="panel-body">
+                    
+                    // rendu du formulaire de filtrage associé au StudentResearchType
+                    {{ form_start(form) }}
+
+                    <div class="row">
+
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                            <div class="form-group">
+                                <div class="input-search">
+                                    <i class="input-search-icon wb-search" aria-hidden="true"></i>
+                                    {{ form_widget(form.Nom) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                            <div class="form-group">
+                                <div class="input-search">
+                                    <i class="input-search-icon wb-search" aria-hidden="true"></i>
+                                    {{ form_widget(form.Prenom) }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                            {{ form_row(form.unit) }}
+                        </div>
+
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                            {{ form_row(form.division) }}
+                        </div>
+
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                            {{ form_row(form.regime) }}
+                        </div>
+
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                            <div class="form-group">
+                                <div class="input-search">
+                                    {{ form_widget(form.brotherhoodSize) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                            <div class="form-group">
+                                <div class="input-search">
+                                    {{ form_widget(form.brotherhoodRank) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-12 col-lg-6 col-md-6 col-sm-12 col-12">
+                            {{ form_row(form.RemoveNoClassroom) }}
+                        </div>
+
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-secondary">Rechercher</button>
+                            <button type="button" class="btn btn-link reinitForm">Réinit.</button>
+                        </div>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-9 col-12">
+            <div class="panel">
+                <div class="panel-body">
+
+                    // on lui passe en paramètre le datatable (issu du controller), l'id du tableau, et le formulaire de filtre(form)
+                    // si on en a un.
+                    {{ render_datatables(datatable, 'studentsList', form) }}
+
+                    <p class="text-center main-actions">
+                        <a class="btn btn-success" href="{{ path('studentBase_person_student_excelExportStudents') }}">
+                            <i class="fa fa-table"></i>
+                            Export Excel
+                        </a>
+
+                        <a class="btn btn-link" href="{{ path('studentBase_formation_classroom_index')}}">
+                            <i class="fas fa-arrow-right"></i>
+                            Consulter la liste des classes
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {{ form_end(form) }}
+{% endblock %}
+
 ```
 
 Rappels Yarn
